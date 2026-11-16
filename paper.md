@@ -199,7 +199,7 @@ Soundness at paper rigor: every derivation over the finitary fragment the table 
 
 ### 3.6 The named open problem: quantum guarded domain theory
 
-The bridge of §3.5 stops where the tick begins. Its two halves each exist in the literature while their composition — to our knowledge, and per §1.1's survey — does not: a **quantum guarded domain theory**.
+The bridge of §3.5 stops where the tick begins. Its halves each exist in the literature; their composition, per §1.1's survey, does not: a **quantum guarded domain theory**.
 
 The target: presheaves on the ordered naturals valued in $\mathbf{CPM}(\mathbf{FdHilb})$, $\triangleright$ the shift functor — the guarded fixpoint denoting the unique productive solution [AM13, Bir12], $\triangleright A$ reading as "$A$ one tick later" (a discrete-time channel), and the serialization theorem `Dcare.chain_tick_buys_one` becoming semantic: the denotation applies exactly one channel per tick — discrete-time open dynamics, made categorical.
 
@@ -207,9 +207,9 @@ Three walls stand between the ingredients and the composition:
 
 1. **Higher order.** $\mathbf{CPM}(\mathbf{FdHilb})$ is not cartesian closed — the obstruction the quantum λ-calculus's denotational program left open [SV06] — and a presheaf construction wants more structure than the bare completely-positive category supplies.
 2. **The stream objects.** No infinite stream lives in $\mathbf{CPM}(\mathbf{FdHilb})$, finite-dimensional by fiat; the presheaf tower would supply streams as time-indexed families — but the dagger structure that carries the physics is delicate under presheaf constructions, and the two disciplines that must meet here — the guard's gate and the dagger's adjoints — have never been made to.
-3. **Solvability.** The guarded fixpoint needs solution objects with $\omega$-limit structure; on the quantum side no such enrichment is standard. Inventing it is not a lemma; it is the problem.
+3. **Solvability.** The guarded fixpoint needs solution objects with $\omega$-limit structure; on the quantum side no such enrichment is standard. Inventing it is not a lemma; it is the problem — but the hope is checkable at toy grain, and it checks: guarded equations over $\omega$-indexed state streams have the unique productive solution, guess-independent and prefix-stabilizing, with contractive maps converging geometrically, while unguarded self-reference is guess-dependent [CCS-sim].
 
-What success would buy this paper: a denotation for the sigil of §4.1; serialization as a semantic fact rather than a syntactic one; and the tick's scale-freeness — "the guard fixes no scale" — promoted from a fence to a theorem, since the shift functor carries no scale to fix. We state the target, the ingredients, and the walls. The construction is open.
+What success would buy: a denotation for the sigil of §4.1; serialization as a semantic fact; and the tick's scale-freeness promoted from fence to theorem — the shift functor carries no scale to fix. We state the target, the ingredients, and the walls. The construction is open.
 
 ## 4. The tick and the boundary
 
