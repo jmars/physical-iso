@@ -5,6 +5,10 @@ Artifact for the paper `paper.md`:
 > *Conservation as Grammar: No-Cloning and Unitarity as Structural Theorems of a
 > Guarded Linear Calculus, with a Holographic Resolution Bound*
 
+**Published: concept doi [10.5281/zenodo.24281490](https://doi.org/10.5281/zenodo.24281490)** —
+it always resolves to the latest archived version. Cite the paper by the concept DOI.
+Each release is archived automatically by Zenodo.
+
 A guarded, sorted linear calculus in which no-cloning and (in the guarded kernel)
 no-vanishing are **structural** theorems — properties of which well-formed
 processes exist, prior to any dynamics — together with a translation manual into
@@ -80,4 +84,6 @@ incorporation.
 Prepared for public release as a preprint plus its runnable artifact. Copyright
 holder Jaye Timothy Marshall, ORCID
 [0009-0002-5209-8161](https://orcid.org/0009-0002-5209-8161). `.zenodo.json`
-carries the deposit metadata; the DOI is minted by the deposit.
+carries the deposit metadata. v1.0.0 is archived as
+[10.5281/zenodo.24281491](https://doi.org/10.5281/zenodo.24281491); the concept DOI above
+covers later versions, which the release webhook deposits automatically.
