@@ -31,7 +31,7 @@ if [ ! -d "$LEAN" ]; then
 fi
 
 # Dcare.<name> — must be a top-level theorem/def/class/structure/inductive
-# anywhere under /workspace/dcare/lean. Namespaced cites (Dcare.SC.lamArm_false)
+# anywhere under the companion tree. Namespaced cites (Dcare.SC.lamArm_false)
 # are normalized to their LAST component before matching.
 names=$(rg -o 'Dcare\.[A-Za-z0-9_.]*[A-Za-z0-9_]' "$PAPER" | sed 's/^Dcare\.//; s/.*\.//' | sort -u)
 if [ -z "$names" ]; then red "FAIL: no Dcare.* citations found"; exit 1; fi
