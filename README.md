@@ -84,6 +84,20 @@ incorporation.
 Prepared for public release as a preprint plus its runnable artifact. Copyright
 holder Jaye Timothy Marshall, ORCID
 [0009-0002-5209-8161](https://orcid.org/0009-0002-5209-8161). `.zenodo.json`
-carries the deposit metadata. v1.0.0 is archived as
-[10.5281/zenodo.24281491](https://doi.org/10.5281/zenodo.24281491); the concept DOI above
-covers later versions, which the release webhook deposits automatically.
+carries the deposit metadata. The latest record is
+[10.5281/zenodo.24288235](https://doi.org/10.5281/zenodo.24288235) (v1.0.1); the concept DOI
+above covers later versions, which the release webhook deposits automatically.
+
+**One step the webhook cannot do.** The Zenodo GitHub integration deposits the release
+archive only, so `paper.pdf` is not previewable in the record until it is added as a
+separate file. After each release's deposit lands, add it:
+
+```
+curl -X POST -H "Authorization: Bearer $ZENODO_TOKEN" \
+  https://zenodo.org/api/deposit/depositions/<new-id>/actions/edit
+curl -X PUT -H "Authorization: Bearer $ZENODO_TOKEN" -H "Content-Type: application/octet-stream" \
+  --data-binary @paper.pdf <bucket-url>/paper.pdf
+```
+
+The bucket is locked once the record is published, so if the deposit has already gone
+through, the PDF goes into a new version instead.
