@@ -98,3 +98,4 @@ UW95/GPP07/Ben07/AEHPV22/Zan15/Xi21/tHooft/Adl04/Ell23/Ell14 (the other
 sector-unitarity strands), Die82/Kit15/Joz02/Vage19/MosVas18, SV09/PQ20/
 Ross15/DGMV19/DI08/Wad90 (the wider quantum-PL set) — all with full metadata
 in the six memo files under `scouting/` and `litreview/`.
+| CCS-sim | §3.5 | The companion channel-simulator: the bridge's clause dictionary implemented executable — its corpora check C2 at scale (82,240 unrestricted constructions, 1,960 erasing, all discard-carrying) and the kernel's quantum-sector image (170/170 unitary) | *channel-sim* — the Tier B simulator (in-tree, /workspace/channel-sim; gate: ALL DEMOS PASS + experiments exp_stress/exp_characterize/exp_cloner) | program-artifact |
