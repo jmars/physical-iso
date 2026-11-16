@@ -1,0 +1,80 @@
+%% guarded-syntax.sty — macros and diagram styles for The Guarded Syntax.
+%% Source is ASCII-only; every non-ASCII glyph is produced by a macro so the
+%% rendering can be changed in one place.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{guarded-syntax}[2026/11/13 v1.0]
+
+\RequirePackage{amssymb}
+\RequirePackage{mathtools}
+\RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.geometric,backgrounds}
+\RequirePackage{amsthm}
+
+%% EPTCS's eptcs.bst emits \doi{...} whose fallback definition chokes on
+%% DOIs containing underscores (text-mode _). Hyperref is loaded by the
+%% class; \nolinkurl typesets the DOI verbatim. Defining \doi here means
+%% the .bbl's \providecommand is a no-op.
+\providecommand{\doi}[1]{doi:\href{https://doi.org/#1}{\nolinkurl{#1}}}
+
+%% Breakable Dcare declaration names in running text: \path allows breaks
+%% at dots and underscores (raw underscores, no escaping).
+\RequirePackage{url}
+\newcommand{\dcn}[1]{\path|Dcare.#1|}
+
+%% ---------- sorts (greppable macros) ----------
+\newcommand{\tC}{\mathit{C}}          % content
+\newcommand{\tK}{\mathit{K}}          % knower
+\newcommand{\tA}{\mathit{A}}          % knowledge
+\newcommand{\tV}{\mathit{V}}          % value
+\newcommand{\tS}{\mathit{S}}          % stream
+\newcommand{\tT}{\mathit{T}}          % trace
+\newcommand{\tUnit}{\mathbf{1}}
+\newcommand{\ten}{\otimes}
+\newcommand{\later}[1]{\guard #1}
+
+%% ---------- the five operators of the grammar ----------
+%% We typeset the circled bullet of the spec as \odot and the trace sink as
+%% \bot; both are macro-swappable.
+\newcommand{\gknower}{\odot}              % ⦿  the knower source
+\newcommand{\glto}{\multimap}             % ⊸  the linear wire
+\newcommand{\guard}{\triangleright}       % ▷  the guard (delay) operator
+\newcommand{\gfeed}{\circlearrowleft}     % ↺  feedback (the +1)
+\newcommand{\gsink}{\bot}                 % ⊥  the archive sink, the -1 debt
+\newcommand{\gswap}{\rightleftarrows}     % ⇄  the definable swap
+\newcommand{\gdiscard}{\circ}             % discard terminator (rails only)
+\newcommand{\lawerr}{\text{\normalfont\large\textcolor{lawred}{$\times$}}}
+\definecolor{lawred}{rgb}{0.75,0.1,0.1}
+
+%% ---------- claim labels and status discipline ----------
+%% MEASURED is used ONLY next to a cited Dcare.* declaration name
+%% (enforced by scripts/paper-check.sh).
+\newcommand{\meas}[1]{\textbf{[MEASURED --- #1]}}
+\newcommand{\interp}[1]{\textbf{[INTERPRETATION --- #1]}}
+\newcommand{\proj}[1]{\textbf{[PROJECTION --- #1]}}
+\newcommand{\claimS}{\textbf{[CLAIM --- stated here, not proven]}}
+\newcommand{\conjl}{\textbf{[CONJECTURE]}}
+\newcommand{\nonclaim}{It is a reading, not a result.}
+
+\newtheorem{claim}{Claim}
+\newtheorem{remark}{Remark}
+\newenvironment{proofsketch}{\begin{proof}[Proof sketch.]}{\end{proof}}
+
+%% ---------- TikZ diagram styles ----------
+\tikzset{
+  wire/.style={-{Latex[length=1.8mm]}, semithick},
+  wireb/.style={-{Latex[length=1.8mm]}, semithick},      % plain variant
+  thickwire/.style={-{Latex[length=2.2mm]}, line width=1.35pt},
+  box/.style={draw, rounded corners=2pt, fill=white, inner sep=4pt,
+              font=\small, minimum height=6.5mm},
+  env/.style={draw, dashed, rounded corners=8pt, inner sep=10pt},
+  bead/.style={regular polygon, regular polygon sides=3,
+               shape border rotate=90, draw, fill=white,
+               inner sep=0.8pt, minimum size=2.6mm},
+  sink/.style={draw, thick, inner sep=0pt, minimum width=4mm,
+               minimum height=2mm, fill=black},
+  discard/.style={draw, circle, fill=white, inner sep=0pt,
+                  minimum size=1.8mm},
+  port/.style={draw, rectangle, fill=white, inner sep=0.8pt,
+               minimum size=2.2mm},
+  lbl/.style={font=\footnotesize\itshape, text=black!65},
+}

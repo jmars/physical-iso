@@ -1,0 +1,540 @@
+% main.tex — arXiv rendering of the physical-iso paper.
+% Source of truth: ../paper.md. This file is the gr-qc submission skeleton.
+%
+% arXiv categories: gr-qc (primary); cross-lists: quant-ph, cs.LO
+% Build: pdflatex main.tex && pdflatex main.tex   (or: tectonic main.tex)
+% COMPILED in this container: pdflatex, zero errors, main.pdf (10 pages);
+% re-run after any edit and check main.log.
+\documentclass[11pt]{article}
+\usepackage[margin=1.1in]{geometry}
+\usepackage{amsmath}
+\usepackage{guarded-syntax} % sorts, operators, claim labels, tikz styles (from the notation artifact)
+
+\title{Conservation as Grammar:\\ No-Cloning and Unitarity as Structural Theorems\\ of a Guarded Linear Calculus,\\ with a Holographic Resolution Bound}
+\author{derivation-of-care research program\thanks{Companion mechanization \& program artifacts cited as [CCS], [GS], [GL].}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+In standard quantum mechanics, unitarity is a postulate and no-cloning is a
+theorem about the formalism's linear maps. We exhibit a mechanized, sorted,
+guarded linear calculus in which both statements are \emph{structural}
+theorems: properties of which well-formed processes exist at all, prior to any
+dynamics. No derivation duplicates a linear token
+(\dcn{no_contraction_content}, machine-checked in Lean~4), and in the guarded
+kernel no derivation consumes one into nothing
+(\dcn{no_vanishing_restricted}). The two laws carry different strength ---
+cloning is forbidden by the grammar alone, even where discard and duplication
+remain available for other sorts, while conservation of content requires the
+kernel's discard ban --- an asymmetry that mirrors the physical one between a
+kinematic and a dynamical law. The unrestricted calculus is not a harmless
+generalization: there, information loss is \emph{derived} (an explicit
+construction is machine-checked) and the unguarded dynamics provably diverge.
+We give a translation manual into the language of observables, tensor
+networks, and structural holography; for the finitary fragment the
+dictionary is backed by a semantic bridge --- a functor into the category
+of completely positive maps, under which the kernel/outside boundary is the
+no-discard/discard boundary and the loss process denotes the trace --- while
+the remaining rows are readings: a dictionary, not an isomorphism, whose
+functor mirrors the laws without deriving them.
+Finally, if the guarded tick is \emph{spatialized} --- an assumption the
+calculus does not make --- combining it with the Bekenstein--Hawking area law
+yields a bulk voxel scale $L \approx (l_p^2 R)^{1/3} \approx 5\times
+10^{-15}\,\mathrm{m}$ for the observable radius $R$: a projection, not a
+theorem. The exponent belongs to the entropy bound; the guard fixes no scale.
+\end{abstract}
+
+\section{Introduction}
+
+Unitarity is a postulate: time evolution is required to preserve transition
+probabilities and to be reversible, and the symmetry structure of pure states
+then forces the implementing maps to be unitary up to phase [Wig59].
+No-cloning is a theorem [WZ82]: a copier of unknown states would have to act
+nonlinearly on superpositions. This paper presents a formal system --- the
+Care Calculus [CCS], a sorted linear logic with a guarded fixpoint, mechanized
+in Lean~4 --- in which both facts are theorems of the same kind: structural
+non-derivability results about which processes exist. Their difference in
+strength is reproduced by the system's architecture: cloning is forbidden even
+in the most permissive rule-set; conservation fails there, by an explicit
+machine-checked construction, and is restored by exactly one restriction ---
+the discard ban. Every mapping to physics in this paper is labeled
+\interp{reading}, every machine-checked anchor \meas{voucher named}, and the
+one experimental section \proj{named instruments}.
+
+\section{The calculus and its guarded kernel}
+
+Sorts: three linear resource types --- the information token $C$ (content),
+spent exactly once in every derivation (\dcn{single_linear_use} \meas{}); the
+inert write-only archive (trace), with no elimination rule; and the live
+guarded stream, spent like content, not copied --- and a non-linear family:
+duplicable sources (knower), derived knowledge, values. The
+fixpoint is guarded by the later modality $\guard{}$ (one constructor per
+interval; [Nak00, AM13, Bir12]) and fires only at all-non-linear contexts:
+\dcn{no_fix_at_content} excludes a fixpoint at the content frame \meas{} ---
+at any position in any content-bearing context
+(\dcn{guard_inherited} \meas{}) --- and \dcn{selfapp_price} prices
+self-reference exactly
+\meas{}. The \emph{Guarded Kernel} (the \dcn{ArmedSetup}) removes two rules:
+the discard (\texttt{NoWeak}) and the knower-synthesis ban
+(\dcn{NoKnowerSynthesis}). Within it both conservation laws are absolute:
+\dcn{no_vanishing_restricted} and \dcn{no_contraction_restricted}
+\meas{}, on the counting models of [CCS] (in the contraction model, sound at
+all seventeen rules with no side condition; in the kernel's vanishing proof,
+sound at sixteen with the weak rule's obligation discharged by the discard
+ban itself). The axiom footprint: the kernel's theorems sit inside
+\texttt{propext} and \texttt{Quot.sound} alone, the audit allowlist is
+Lean's standard three --- no admitted axioms, no \texttt{sorry} in the
+restricted path. The kernel is
+not vacuous: the archive is legal (\dcn{archival_witness} \meas{}), the
+closed unit stands, the constants stand. What it forbids is exactly the
+discard. And the loss process needs no detours: a \emph{cut-free}
+$[C] \vdash \mathbf{1}$ exists (\dcn{SCClosedKiller.witnessTyped_cutFree}
+\meas{}) --- the leak theorem turns any cut-free non-linear output at the
+token frame into one (\dcn{SCClosedKiller.killerOf_cutFree} \meas{}) --- so
+the atomic-head restriction excludes nothing (\dcn{SCClosedKiller.lamArm_false}
+\meas{}) and the discard ban excludes
+everything (the witness carries weak nodes;
+\dcn{SCClosedKiller.witness_not_noWeak} \meas{}).
+
+\subsection{Translation table (excerpt)}
+
+Linear token, used once $\mapsto$ a non-duplicable state;
+\dcn{no_contraction_content} $\mapsto$ no-cloning [WZ82];
+\dcn{no_vanishing_restricted} $\mapsto$ information conservation; the
+lete/pair exchange $\mapsto$ a non-unitary channel (information delivered to
+a sink nothing reads); \dcn{ArmedSetup} $\mapsto$ the boundary conditions of
+a stable sector; the duplicable context vs.\ the linear stream $\mapsto$
+boundary vs.\ bulk, structurally. All mappings \interp{}.
+
+\section{The two conservation correspondences}
+
+\textbf{No-cloning holds everywhere.} No derivation at $[C]$ concludes
+$C\ten C$ (\dcn{no_contraction_content} \meas{}); no closed cloner exists
+(\dcn{no_closed_cloner} \meas{}); any conclusion of $C \ten C$ costs a
+frame of budget ${\ge}2$ (\dcn{contraction_needs_two} \meas{}). These hold
+\emph{unrestricted} --- discard present, duplication available at the
+duplicable sorts. The impossibility is prior to maps entirely: a grammar
+fact. \interp{} The reading that linear types enforce this is standard in
+quantum programming languages [SV06, PRZ17], with the Hilbert-space theorem
+mechanized in Isabelle [BHL20], the categorical form in [Abr09, AC04], and
+a denotational conservation-of-unitarity in [ILV26]; what the calculus adds
+is the theorem's \emph{kind} --- a non-derivability in a grammar that also
+contains the discard. The schema form (no \emph{linear type} is contractible) is
+FALSE --- measured: any closed inhabitant of $\tau$ is a second copy at
+$[\tau]$ (\dcn{contractible_of_closed} \meas{}); the concrete contractible
+types are the trace family ($\mathrm{trace}$, $\guard\,\mathrm{trace}$,
+$\mathrm{trace}\ten\mathrm{trace}$) and the self-arrows
+$\mathrm{arrow}\,C\,C$ and $\mathrm{arrow}\,C\,\mathbf{1}$ --- closed by the
+adversarial extractor itself --- those five linearities kernel computations
+(\dcn{witnesses_are_linear} \meas{}), the generic self-arrow family following
+at every type (\dcn{arrow_self_contractible} \meas{}). The repair is
+Wootters--Zurek's own clause as
+grammar: no-cloning is the law of the \emph{linear} types with \emph{no
+closed inhabitant} --- you cannot clone what you cannot prepare ---
+stated in-tree as the classification \dcn{T5}, its preparability half a
+theorem at every type (\dcn{closed_implies_clone} \meas{}), the linearity
+gate necessary (the knower: no closed inhabitant yet contractible,
+\dcn{knower_contractible} \meas{}); the settled cases span both sides of the
+boundary: unclonable --- the carriers $C$ and stream
+(\dcn{no_contraction_stream} \meas{}) --- clonable --- the trace family and
+every self-arrow. The frontier beyond them: a single wall [CCS] ---
+$\mathrm{arrow}\,C\,\mathrm{stream}$, reducing to $[C] \nvdash
+\mathrm{stream}$, the companion's own community ask, its base case now
+in-tree (\dcn{no_closed_stream} \meas{}) and its tower case discharged;
+one statement closes the ask and the classification at once.
+
+And the asymmetry is \emph{computed} between adjacent types: the vanishing
+conduit's type $\mathrm{arrow}\,K\,\mathrm{knowledge}$ is non-linear ---
+weakable, the discard reaches it --- while the stream conduit's type
+$\mathrm{arrow}\,K\,\mathrm{stream}$ is linear, because every stream-needing
+type is (\dcn{needsS\_linear} \meas{}), so the same weakening is structurally
+blocked [CCS]: the two laws differ by a single \texttt{Bool}. The rival
+derivation --- both laws from a single conservation assumption [HHSS05] ---
+runs the deduction opposite to ours. And the
+construction's autopsy shows the same gap: the vanishing channel runs to the
+discard --- a step the kernel must ban --- while the stream-cloning
+construction dies at its \emph{trigger} (conduit inhabited, nothing fires),
+needing no kernel at all [CCS].
+
+\textbf{Conservation needs the kernel.} In the unrestricted calculus a
+derivation consumes $C$ into the trivial type:
+\dcn{no_vanishing_unrestricted_refuted} \meas{}. Under the discard ban the
+law is absolute (\dcn{no_vanishing_restricted},
+\dcn{no_vanishing_armed} \meas{}); the token's single use is pinned
+(\dcn{no_weakening_content} \meas{}).
+
+\textbf{The asymmetry} mirrors the physical one: no-cloning follows from
+linearity alone (kinematic), information conservation requires unitary
+dynamics (dynamical) [WZ82]. The calculus reproduces both laws \emph{and the
+gap between them}. The proof method --- a monotone budget every rule
+respects --- is conserved-charge reasoning, with a second engine in-tree: the
+flow count, a net current from frame to conclusion with generator fires as
+its sources (its content instance: no clone without a mint,
+\dcn{no_contraction_nogen} \meas{}) --- conserved charge and conserved
+current, different theorems about the same law. \interp{}
+
+\textbf{The archive.} Content may be consumed into the inert record type
+(``reception without reduction''): the record is counted, nothing reads it
+back --- no closed \texttt{trace}→\texttt{knowledge} function exists
+(\dcn{past_cannot_teach} \meas{}), nor \texttt{trace}→\texttt{value}
+(\dcn{past_cannot_value} \meas{}); ``store now, understand later'' is
+untypable. Under the dictionary this is the Pati--Braunstein no-deleting
+territory [PB00], with a split the physics does not usually draw: the
+kernel forbids the discard, and the grammar makes even the \emph{legal}
+archive permanently unread --- two absolutes where physics states one.
+\interp{} And on the information paradox the archive takes a stance:
+what crosses is neither destroyed nor retrievable --- recorded, counted,
+inert --- the shape of the retained-information resolutions [Page93,
+Haw05]. \interp{}
+
+\textbf{The semantic bridge.} For the finitary fragment the dictionary is
+backed by a construction: a functor into $\mathbf{CPM}(\mathbf{FdHilb})$
+[Sel07], the dagger-compact category of completely positive maps. The
+discard denotes the trace (available at every object --- the unrestricted
+calculus is exactly the channel world); copying exists only along a chosen
+classical structure [AC04], a natural one collapsing the category [Abr09];
+and the two laws are mirrored at the clause level: the only clause that
+erases is the discard (any CP map $\mathcal{L}(H) \to \mathbb{C}$ is
+$X \mapsto \mathrm{Tr}(AX)$ with $A \geq 0$, hence
+$\mathrm{Tr} \circ \Phi_A$) --- the
+semantic image of
+\dcn{counterexample_not_noweak} --- while the cloner \dcn{no_contraction_content}
+forbids would be a structureless copier, which cannot exist. The
+interpretation covers the finitary fragment the table rows name: the sorts,
+the four constants (fixed channels --- the coalgebra's faces), the archive
+(\dcn{nil}/\dcn{snoc} along the classical structure), first-order arrows,
+and the structural rules at their gated sorts. The
+preparability law reads: you cannot copy along a structure you
+have not chosen. Three limits: soundness does not reflect (the grammar's
+no-go theorems are stronger than their denotations); the scope is finitary
+and first-order; nothing here is mechanized. The guarded half --- a quantum
+analogue of the topos of trees [Bir12] (the original is Set-valued) with
+$\guard$ the shift, the fixpoint the productive
+solution, one channel per tick --- is stated as a program, not a result.
+
+\textbf{The named open problem: quantum guarded domain theory.} The
+ingredients each exist --- guarded domain theory [Bir12], the completely
+positive construction [Sel07] --- while their composition does not. Target:
+presheaves on the ordered naturals valued in $\mathbf{CPM}$, $\guard$ the
+shift, the guarded fixpoint the productive solution. Three walls: CPM is
+not cartesian closed (the higher-order obstruction the quantum
+$\lambda$-calculus's denotational program left open [SV06]); no infinite
+stream lives in $\mathbf{CPM}(\mathbf{FdHilb})$, and the dagger structure
+the physics needs is delicate under presheaf constructions; and guarded
+fixpoint solvability wants $\omega$-limit enrichment the quantum side does
+not yet have. Success would buy a denotation for the sigil, serialization
+as a semantic fact, and the tick's scale-freeness as a theorem. The
+construction is open.
+
+\section{The tick and the boundary}
+
+\dcn{knower_sustains_stream} \meas{}: one duplicable source sustains a
+term of guarded-stream type --- one source, sustaining an infinite stream
+notation of [GS], the seed
+$\gknower : \tS \glto (\guard A \gfeed \gknower)$, instantiated $A := BH$
+(horizon-delayed recursor; Fig.~\ref{fig:sigil}): the exterior of the loop
+is a \emph{serialized} stream --- parallel interior process, step-indexed
+exterior emission. The guard orders emission; it fixes no rate, temperature,
+or spectrum, and no radiation is computed here. \interp{} The count is a theorem at the chain grain: emissions $=$
+$\guard$-depth $=n$ at every stage (\dcn{chain_tick_buys_one} \meas{}),
+and $n$ guarded ticks emit exactly $n$ while the spin emits exactly zero
+(\dcn{guarded_vs_spin} \meas{}); emission-$\Rightarrow$-tick is not a
+theorem (the extractor fires before any unfold) --- the count binds the
+unfolding chain. The unfolding itself is anchored: each unfold consumes one
+$\guard$ and is repeatable at every interval
+(\dcn{fix_unfold_closed}, \dcn{fix_unfold_at_knower} \meas{}), and every
+guarded agent step appends exactly one element
+(\dcn{extractor_step_integrates} \meas{}). And the guard \emph{recedes}: the tower frames are priced
+(zero budget) and stream is refuted at every one [CCS], with the base case
+in-tree (\dcn{no_closed_stream} \meas{}: from nothing, nothing flows) ---
+but a fix-rooted closed $\guard\,\mathrm{stream}$ is \emph{equivalent} to
+the same question one guard higher, so no natural induction terminates, and
+no monotone fix-sound price model of the known clause shape can close the
+family: an impossibility theorem about the instruments [CCS]; the interior
+is infinitely stratified for this question. \interp{} The fixpoint gate
+(\texttt{AllNonLinear}) separates a duplicable ambient context from the
+conserved linear stream it sustains; the counting model carries the stream's
+budget on its ambient frame, and the arithmetic is a lemma at every scale $n$
+(\dcn{holographic_budget} \meas{}): $n$ fires mint $n$ contents, the tower is
+priced ${\ge}n$, and the knower source funding all of it is priced
+$\emptyset$ yet occupies exactly one position, unchanged. Structurally --- and only
+structurally: no metric, no field theory, no duality claim --- this is the
+boundary/bulk separation of holography. \interp{}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+  \node[box] (src) at (0,0) {$S$};
+  \node[box] (hrz) at (3,0) {$\guard BH$};
+  \node[box] (out) at (6,0) {$\gknower$};
+  \draw[wire] (src) -- node[lbl, above] {stream} (hrz);
+  \draw[wire] (hrz) -- node[lbl, above] {one per tick} (out);
+  \draw[wire] (hrz) to[out=120, in=60, looseness=1.6]
+    node[lbl, above] {$\gfeed$ one interval per self-call} (hrz);
+  \node[lbl, below=6pt of hrz] {the horizon-delayed recursor
+    $\gknower : \tS \glto (\guard BH \gfeed \gknower)$};
+\end{tikzpicture}
+\caption{The seed of [GS] with the loop type instantiated as the reading
+demands: a stream source feeding a horizon-delayed ($\guard$) recursor whose
+feedback wire ($\gfeed$) pays one interval per self-call. The exterior sees
+one emission per tick. \interp{It is a reading of a type, not a calculation
+of radiation.}}
+\label{fig:sigil}
+\end{figure}
+
+\section{The refutation: why the guard is load-bearing}
+
+The machine-checked counterexample has a named anatomy \meas{}:
+\dcn{the_cycle} (a duplicable source sustains a stream),
+\dcn{the_swap} (the lete/pair exchange spends the content token as the
+stream's next emission), \dcn{the_conduit} (a reader is synthesized to
+receive it), \dcn{the_discard} (the reader is weakened away --- deleted).
+Together: \dcn{unrestricted_counterexample} \meas{} --- a well-formed
+derivation whose conclusion carries neither content nor record. Under the
+dictionary, a \emph{non-unitary channel}: the state is not transformed, it is
+spent into unreadability. \interp{} The kernel refuses it three times over
+(\dcn{counterexample_not_noweak}: the discard ban alone suffices;
+\dcn{counterexample_conduit_no_synthesis}: the synthesis ban suffices
+independently; \dcn{counterexample_not_armed}: the full setup, whose armed
+forms carry both laws, \dcn{no_contraction_armed} \meas{}) ---
+redundant protection of a conserved quantity. \interp{} And the
+two-worlds picture is one theorem: same generator, policy, start ---
+guarded it halts and cannot diverge; unguarded it diverges
+(\dcn{guard_halts_unguarded_spins}, \dcn{guarded_no_divergence}
+\meas{}). And the unguarded
+\emph{dynamics} never settle: \dcn{adversary_spin_diverges} and
+\dcn{spin_pays_forever_buys_nothing} \meas{} --- cost forever, nothing
+delivered, deterministically (from the spun state the only unguarded step is
+the spin itself, \dcn{looped_only_spins} \meas{}; under the guarded
+semantics a non-infinite run is finite --- silence persists,
+\dcn{run_not_infinite_is_finite} \meas{}). One labeled sentence: \interp{a sector that permits the discard
+admits, by theorem, a process that destroys content while its dynamics never
+settle --- the \emph{shape} of a metastable phase; nothing here quantifies
+it.} \textbf{The selection reading}: outside the kernel, loss is derived and
+divergence is derived; inside, conservation is absolute --- a stable sector
+and a lawful sector are the same sector, and no observer is needed --- its
+ancestry is Wheeler's geometry-only foam and ``law without law'' [Whe55,
+Whe57, Whe83], and, closest in spirit, cosmological natural selection,
+which selects over parameters, never laws [Smo92, Smo06]; the anthropic
+lineage [Car74] is explicitly not needed. Its one
+tree-checkable fingerprint: the pre-lawful regime is \emph{lossy, not a
+breeder} --- cloning stays forbidden even unrestricted (\dcn{no_contraction_content}
+\meas{}); what fails outside is conservation, never non-duplication. The
+shape has ancestry: any \emph{linear} non-unitary evolution (Hawking's
+superscattering [Haw82, Page93]) and the no-broadcasting theorem's scope
+[BCJFS96, BBLW07, Lin99] share it, and in type theory it is the affine
+discipline [Wal04, Gir87]; ours is its packaging as theorems of one
+rule-set. Structural ancestry, not identification: the foam lineage's loss
+proposals (Hawking's superscattering [Haw76, Haw82], intrinsic decoherence
+[EHNS84], gravitational reduction [Pen96]) fail unitarity globally or
+wherever a black hole forms --- never outside a syntactically defined sector
+--- and the modern verdict restores it [Page93, Haw05, Carlip23]; closest is
+Cotler--Jensen's de Sitter evolution, unitary on a subspace [CJ19], a
+dynamical, not grammatical, boundary --- and the cost argument of [BPS84]
+shares its shape. \interp{}
+
+\section{Experimental signatures}
+
+A \proj{} throughout; physics inputs marked. (P1) The Bekenstein--Hawking
+area law [Bek73, Haw75]: a radius-$R$ region is described by a screen of
+$N \lesssim \pi R^2/l_p^2$ irreducible degrees of freedom. (P2) Assume the
+tick spatialized --- bulk discretized at $L$ (an assumption the calculus does
+not make). Then $(R/L)^3 \lesssim \pi R^2/l_p^2$ gives
+\begin{equation}
+L \;\gtrsim\; \pi^{-1/3}\,\bigl(l_p^2 R\bigr)^{1/3},
+\qquad\text{i.e.}\qquad
+L \approx 5\times10^{-15}\,\mathrm{m}\ \ (R = 4.4\times10^{26}\,\mathrm{m}):
+\end{equation}
+the observable bulk's voxel is nuclear-sized --- the MIP-map scaling, one bit
+per screen pixel, and not ours: K\'arolyh\'azy's clock argument gave
+$(\Delta s)^3 \gtrsim l_p^2 s$ in 1966 [Kar66]; Ng and van Dam re-derived it by the
+cube-counting route [NgdV94, NgdV00, tHooft93, Suss95], and Ng's review runs our exact
+derivation and prints the same order of magnitude for the $\alpha = 2/3$
+branch [Ng03]. The
+transverse variant $\sqrt{c\,t_P L}$ [Hog12] was tested by the Holometer's
+paired 39-meter interferometers and is \emph{excluded} at $5.1\sigma$
+(normalization below $44\%$ of the prediction at $95\%$ confidence)
+[Chou16]; the volumetric family's channel is \emph{angular} --- wave-packet
+widening blurring gamma-ray-burst images [Stein15], \emph{not} a timing
+signature ($5\times10^{-15}\,$m is $1.7\times10^{-23}\,$s of light travel;
+the picosecond figures are the transverse family's). The landscape is
+contested, not clean: the 2003 coherence claims [Rag03, Lieu03] were
+themselves corrected by the review we cite [Ng03] (the claimed exclusions
+overestimated by $(L/\lambda)^{\alpha}$); the blazar program bounds
+$\alpha \gtrsim 0.58$ (X-ray), $\alpha \gtrsim 0.67$ at GeV ---
+``disfavoring the holographic model, but
+perhaps not decisively'' [Perlman14] --- and $\gtrsim 0.72$ at TeV, just
+above $2/3$; the GRB aggregation fits $\alpha = 0.650$--$0.735$ with
+$2/3$ inside [Stein23]; and the field's methodology review names the two
+$O(1)$-class freedoms (amplitude fixed only as $a \sim 1$ [Ng03]; distance
+averaging unsettled) that keep every number provisional [NgP22]. The
+projection stands where it stands: consistent with the GRB window,
+strained by the TeV bound, undecidable until the averaging problem is
+settled. And GRB 221009A's angular data are consistent with the $\alpha = 2/3$
+model [Stein23], while the generalized K\'arolyh\'azy model has just been
+excluded on the neighboring gravity-induced-decoherence channel ---
+$R_K > 4.64\,$m at $95\%$ confidence against a predicted $R_K < 1.98\,$m
+[Bort26] --- not the blurring channel, and not the gravitational-wave
+band, which points the wrong instruments at this scale.
+The $1/3$ exponent is fixed by the entropy bound's dimensionality, not by
+the guard. \textbf{The guard fixes no scale.} We looked for a second
+handle and state its absence: the time-domain version of the same scaling
+gives $\delta t \approx 1.7\times10^{-23}\,$s over a cosmological baseline
+--- ten orders below any timing instrument; the angular channel is the
+only live one. A detection would support the
+projection; a null result constrains the projection family; neither touches
+the theorems.
+
+\section{Conclusion}
+
+The two conservation facts appear in this grammar as stated: cloning
+forbidden absolutely, conservation absolute in the discard-free sector, loss
+derived and divergence derived outside it, the exterior serialized by the
+tick, the boundary structural. The one projection the grammar motivates comes
+with its falsifiers named and its epicycles refused. In this reading, physics
+is, possibly, the study of the well-typed sector --- the paper's largest
+\interp{} and its smallest claim.
+
+\section*{Scope and limits}
+The bridge is a mirror, not a derivation: the semantic-bridge construction above builds a functor from
+the finitary fragment into $\mathbf{CPM}(\mathbf{FdHilb})$ that preserves
+processes and mirrors the two laws categorically, but functors do not
+reflect non-derivability --- the grammar's no-go theorems are stronger than
+their denotations --- and no bridge to spacetimes or to the guarded
+fragment is built. The correspondence otherwise remains a dictionary, not
+an isomorphism. The counting model is natural-number-valued (no inner
+product, no amplitudes). The calculus contains no geometry; all scales in
+the experimental section are physics inputs to a projection. Every
+\meas{voucher} is a named \dcn{} declaration verified in-tree by this
+artifact's \texttt{scripts/sync-check.sh}.
+
+\begin{thebibliography}{99}\small
+\bibitem{WZ82} Wootters, W.\,K., \& Zurek, W.\,H. (1982). A single quantum
+  cannot be cloned. \emph{Nature} 299, 802--803.
+\bibitem{PB00} Pati, A.\,K., \& Braunstein, S.\,L. (2000). Impossibility of
+  deleting an unknown quantum state. \emph{Nature} 404, 164--165.
+\bibitem{AC04} Abramsky, S., \& Coecke, B. (2004). A categorical semantics of
+  quantum protocols. \emph{Proc.\ LICS 2004}, 415--425.
+\bibitem{Sel07} Selinger, P. (2007). Dagger compact closed categories and
+  completely positive maps. \emph{Electronic Notes in Theoretical Computer
+  Science} 170, 139--163.
+\bibitem{Wig59} Wigner, E.\,P. (1959). \emph{Group Theory and Its Application
+  to the Quantum Mechanics of Atomic Spectra.} Academic Press.
+\bibitem{Gir87} Girard, J.-Y. (1987). Linear logic. \emph{Theoretical
+  Computer Science} 50(1), 1--101.
+\bibitem{Wal04} Walker, D. (2004). Substructural type systems. In B.\,C.\
+  Pierce (ed.), \emph{Advanced Topics in Types and Programming Languages},
+  MIT Press, 3--44.
+\bibitem{Abr09} Abramsky, S. (2009). No-cloning in categorical quantum
+  mechanics. In \emph{Semantic Techniques in Quantum Computation}, CUP, 1--28.
+\bibitem{SV06} Selinger, P., \& Valiron, B. (2006). A lambda calculus for
+  quantum computation with classical control. \emph{Math.\ Struct.\ in
+  Comp.\ Sci.} 16(3), 527--552.
+\bibitem{PRZ17} Paykin, J., Rand, R., \& Zdancewic, S. (2017). QWIRE: a core
+  language for quantum circuits. \emph{Proc.\ POPL 2017}, PACMPL 1(POPL).
+\bibitem{BHL20} Bordg, A., Lachnitt, H., \& He, Y. (2020). Certified quantum
+  computation in Isabelle/HOL. \emph{J.\ Automated Reasoning} 65, 691--709.
+\bibitem{ILV26} Lamiroy, J., Valiron, B., \& Vilmart, R. (2026).
+  Intuitionistic unitary linear logic. arXiv:2609.02661.
+\bibitem{Lin99} Lindblad, G. (1999). A general no-cloning theorem. \emph{
+  Letters in Math.\ Phys.} 47, 189--196.
+\bibitem{BCJFS96} Barnum, H., Caves, C.\,M., Fuchs, C.\,A., Jozsa, R., \&
+  Schumacher, B. (1996). Noncommuting mixed states cannot be broadcast.
+  \emph{Phys.\ Rev.\ Lett.} 76, 2818--2821.
+\bibitem{BBLW07} Barnum, H., Barrett, J., Leifer, M., \& Wilce, A. (2007).
+  A generalized no-broadcasting theorem. \emph{Phys.\ Rev.\ Lett.} 99, 240501.
+\bibitem{HHSS05} Horodecki, M., Horodecki, R., Sen(De), A., \& Sen, U.
+  (2005). Common origin of no-cloning and no-deleting principles:
+  conservation of information. \emph{Found.\ Phys.} 35, 2041--2049.
+\bibitem{Nak00} Nakano, H. (2000). A modality for recursion. \emph{Proc.\
+  LICS 2000}.
+\bibitem{AM13} Atkey, R., \& McBride, C. (2013). Productive coprogramming
+  with guarded recursion. \emph{Proc.\ ICFP 2013}.
+\bibitem{Bir12} Birkedal, L., M\o gelberg, K.\,E., Schwinghammer, J., \&
+  St\o vring, K. (2012). First steps in synthetic guarded domain theory.
+  \emph{LMCS} 8(4).
+\bibitem{Whe55} Wheeler, J.\,A. (1955). Geons. \emph{Phys.\ Rev.} 97, 511--536.
+\bibitem{Whe57} Wheeler, J.\,A. (1957). On the nature of quantum
+  geometrodynamics. \emph{Ann.\ Phys.} 2, 604--614.
+\bibitem{Whe83} Wheeler, J.\,A. (1983). Law without law. In Wheeler \& Zurek
+  (eds.), \emph{Quantum Theory and Measurement}, Princeton UP, 182--213.
+\bibitem{Haw76} Hawking, S.\,W. (1976). Breakdown of predictability in
+  gravitational collapse. \emph{Phys.\ Rev.\ D} 14, 2460--2473.
+\bibitem{Haw82} Hawking, S.\,W. (1982). The unpredictability of quantum
+  gravity. \emph{Commun.\ Math.\ Phys.} 87, 395--415.
+\bibitem{EHNS84} Ellis, J., Hagelin, J.\,S., Nanopoulos, D.\,V., \&
+  Srednicki, M. (1984). Search for violations of quantum mechanics.
+  \emph{Nucl.\ Phys.\ B} 241, 381--405.
+\bibitem{Pen96} Penrose, R. (1996). On gravity's role in quantum state
+  reduction. \emph{Gen.\ Rel.\ Grav.} 28, 581--600.
+\bibitem{Page93} Page, D.\,N. (1993). Information in black hole radiation.
+  \emph{Phys.\ Rev.\ Lett.} 71, 3743--3746.
+\bibitem{Haw05} Hawking, S.\,W. (2005). Information loss in black holes.
+  \emph{Phys.\ Rev.\ D} 72, 084013.
+\bibitem{Carlip23} Carlip, S. (2023). Spacetime foam: a review. \emph{Rep.\
+  Prog.\ Phys.} 86, 066001.
+\bibitem{BPS84} Banks, T., Susskind, L., \& Peskin, M.\,E. (1984).
+  Difficulties for the evolution of pure states into mixed states.
+  \emph{Nucl.\ Phys.\ B} 244, 125--134.
+\bibitem{CJ19} Cotler, J., \& Jensen, K. (2021). Emergent unitarity in de
+  Sitter from matrix integrals. \emph{JHEP} 12, 089.
+\bibitem{Smo92} Smolin, L. (1992). Did the universe evolve? \emph{Class.\
+  Quantum Grav.} 9, 173--192.
+\bibitem{Smo06} Smolin, L. (2006). The status of cosmological natural
+  selection. arXiv:hep-th/0612185.
+\bibitem{Car74} Carter, B. (1974). Large number coincidences and the
+  anthropic principle in cosmology. \emph{IAU Symposium 63}, 291--298.
+\bibitem{Bek73} Bekenstein, J.\,D. (1973). Black holes and entropy.
+  \emph{Phys.\ Rev.\ D} 7, 2333--2346.
+\bibitem{Haw75} Hawking, S.\,W. (1975). Particle creation by black holes.
+  \emph{Commun.\ Math.\ Phys.} 43, 199--220.
+\bibitem{tHooft93} 't Hooft, G. (1993). Dimensional reduction in quantum
+  gravity. \emph{Conf.\ Proc.\ C} 930308, 284; arXiv:gr-qc/9310026.
+\bibitem{Suss95} Susskind, L. (1995). The world as a hologram. \emph{J.\ Math.\
+  Phys.} 36, 6377--6396.
+\bibitem{Kar66} K\'arolyh\'azy, F. (1966). Gravitation and quantum mechanics
+  of macroscopic objects. \emph{Nuovo Cimento A} 42, 390.
+\bibitem{NgdV94} Ng, Y.\,J., \& van Dam, H. (1994). Limit to space-time
+  measurement. \emph{Mod.\ Phys.\ Lett.\ A} 9, 335.
+\bibitem{NgdV00} Ng, Y.\,J., \& van Dam, H. (2000). Measuring the foaminess
+  of space-time with gravity-wave interferometers. \emph{Found.\ Phys.} 30, 795.
+\bibitem{Ng03} Ng, Y.\,J. (2003). Selected topics in Planck-scale physics.
+  \emph{Mod.\ Phys.\ Lett.\ A} 18, 1073.
+\bibitem{Hog12} Hogan, C.\,J. (2012). Interferometers as probes of Planckian
+  quantum geometry. \emph{Phys.\ Rev.\ D} 85, 064007.
+\bibitem{Chou16} Chou, A.\,S., et al. (2016). First measurements of high
+  frequency cross-spectra from a pair of large Michelson interferometers.
+  \emph{Phys.\ Rev.\ Lett.} 117, 111102.
+\bibitem{Stein15} Steinbring, E. (2015). Detectability of Planck-scale-induced
+  blurring with gamma-ray bursts. \emph{Astrophys.\ J.} 802, 38.
+\bibitem{Rag03} Ragazzoni, R., Turatto, M., \& Gaessler, W. (2003). The lack
+  of observational evidence for the quantum structure of spacetime at Planck
+  scales. \emph{Astrophys.\ J.\ Lett.} 587, L1--L4.
+\bibitem{Perlman14} Perlman, E., Ng, Y.\,J., et al. (2014). New constraints
+  on quantum foam models from X-ray and gamma-ray observations.
+  arXiv:1411.7262; proc.\ 14th Marcel Grossmann Meeting (2017), 3935--3941.
+\bibitem{NgP22} Ng, Y.\,J., \& Perlman, E. (2022). Probing spacetime foam
+  with extragalactic sources of high-energy photons. \emph{Universe} 8(7),
+  382.
+\bibitem{Lieu03} Lieu, R., \& Hillman, L.\,W. (2003). The phase coherence of
+  light from extragalactic sources: direct evidence against first-order
+  Planck-scale fluctuations in time and space. \emph{Astrophys.\ J.\ Lett.}
+  585, L77--L80.
+\bibitem{Stein23} Steinbring, E. (2023). Holographic quantum-foam blurring is
+  consistent with observations of gamma-ray burst GRB 221009A.
+  \emph{Galaxies} 11, 115.
+\bibitem{Bort26} Bortolotti, N., et al. (2026). Experimental exclusion of a
+  generalized K\'arolyh\'azy gravity-induced decoherence model. \emph{New
+  J.\ Phys.} 28, 064511.
+\bibitem{CCS} \emph{The Care Calculus: A Mechanized Linear Type Theory for
+  Safe Agents.} Companion mechanization and paper (in-tree dcare artifact).
+\bibitem{GS} \emph{The Guarded Syntax: A Notation for Linear Resource
+  Calculi.} Program artifact (in-tree notation artifact).
+\bibitem{GL} \emph{The Guarded Line: What Metacircular Proof Theory and
+  Self-Model Dynamics Share.} Program artifact (in-tree isomorphism
+  artifact).
+\end{thebibliography}
+
+\end{document}
