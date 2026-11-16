@@ -1,20 +1,34 @@
 #!/usr/bin/env bash
 # sync-check.sh — every Dcare.<name> in the physical-iso paper matches a real
-# top-level declaration somewhere in /workspace/dcare/lean — the WHOLE tree,
-# including Dcare/Kernel/ and Dcare/Adversarial/ (the sibling isomorphism-paper
-# script searched only Dcare/*.lean and would fail the Guarded-kernel anchors).
+# top-level declaration somewhere in the companion Lean development — the WHOLE
+# tree, including Dcare/Kernel/ and Dcare/Adversarial/ (the sibling
+# isomorphism-paper script searched only Dcare/*.lean and would fail the
+# Guarded-kernel anchors).
 # Every Typed./Term./Ty. constructor must match a real constructor.
 # A dead name (e.g. the deleted unrestricted `no_vanishing`) fails here.
-# Exit 0 = green.
+#
+# The companion is a separate repository (github.com/jmars/coglib). Point at a
+# checkout of it with DCARE_LEAN; the default is a sibling ../coglib/lean.
+# A missing tree is reported as NOT CHECKED (exit 2) — never as a pass.
+#
+#   DCARE_LEAN=~/coglib/lean ./scripts/sync-check.sh
+#
+# Exit 0 = green, 1 = a dead anchor, 2 = no Dcare tree to check against.
 set -u
 HERE="$(cd "$(dirname "$0")" && pwd)"
 PAPER="${1:-$HERE/../paper.md}"
-LEAN="/workspace/dcare/lean"
+LEAN="${DCARE_LEAN:-$HERE/../coglib/lean}"
 fail=0
 red()   { printf '\033[31m%s\033[0m\n' "$*"; }
 green() { printf '\033[32m%s\033[0m\n' "$*"; }
 
 [ -f "$PAPER" ] || { red "FAIL: no paper at $PAPER"; exit 1; }
+if [ ! -d "$LEAN" ]; then
+  red "NOT CHECKED: no Lean development at $LEAN"
+  red "  the companion lives at github.com/jmars/coglib — point DCARE_LEAN at it:"
+  red "  DCARE_LEAN=/path/to/coglib/lean $0"
+  exit 2
+fi
 
 # Dcare.<name> — must be a top-level theorem/def/class/structure/inductive
 # anywhere under /workspace/dcare/lean. Namespaced cites (Dcare.SC.lamArm_false)

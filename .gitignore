@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.venv/
+latex/*.aux
+latex/*.log
+latex/*.out

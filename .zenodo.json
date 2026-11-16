@@ -1,0 +1,40 @@
+{
+  "title": "Conservation as Grammar: No-Cloning and Unitarity as Structural Theorems of a Guarded Linear Calculus, with a Holographic Resolution Bound",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "description": "In standard quantum mechanics, unitarity is a postulate — forced, once probability preservation and reversibility are granted, by the symmetry structure of pure states — and no-cloning is a theorem about the formalism's linear maps. We exhibit a mechanized, sorted, guarded linear calculus in which both statements are *structural* theorems: properties of which well-formed processes exist at all, prior to any dynamics. No derivation duplicates a linear token (`no_contraction_content`, machine-checked in Lean 4), and in the guarded kernel no derivation consumes one into nothing (`no_vanishing_restricted`). The two laws carry different strength — cloning is forbidden by the grammar alone, even where discard and duplication remain available for other sorts — and the law's scope is pinned rather than settled: the cloning ban is the law of the linear types with no closed inhabitant, every preparable type provably clonable, the information carriers provably not, one boundary case open — while conservation of content requires the kernel's discard ban — an asymmetry that mirrors the physical one between a kinematic law and a dynamical one. The unrestricted calculus is not a harmless generalization: there, information loss is *derived* (an explicit construction is machine-checked) and the unguarded dynamics provably diverge — pay forever, deliver nothing. We give a translation manual into the language of observables, tensor networks, and structural holography; for the finitary fragment the dictionary is backed by a semantic bridge — a functor into the category of completely positive maps, under which the kernel/outside boundary is the no-discard/discard boundary and the loss process denotes the trace — while the remaining rows are readings: a dictionary, not an isomorphism, whose functor mirrors the laws without deriving them. Finally, if the guarded tick is *spatialized* — an assumption the calculus does not make — combining it with the Bekenstein–Hawking area law yields the bulk voxel scale of the spacetime-foam literature — $L \\approx (l_p^2 R)^{1/3} \\approx 5\\times10^{-15}\\,$m for the observable radius $R$, a scaling due to Károlyházy and to Ng — a projection, not a theorem. The exponent belongs to the entropy bound; the guard fixes no scale.",
+  "creators": [
+    {
+      "name": "Jaye Timothy Marshall",
+      "orcid": "0009-0002-5209-8161"
+    }
+  ],
+  "keywords": [
+    "linear logic",
+    "guarded recursion",
+    "no-cloning",
+    "unitarity",
+    "information conservation",
+    "holographic principle",
+    "spacetime foam",
+    "quantum gravity phenomenology"
+  ],
+  "license": "cc-by-nc-sa-4.0",
+  "version": "v1.0.0",
+  "access_right": "open",
+  "notes": "Deposit license is CC-BY-NC-SA-4.0, covering paper.md, paper.pdf and the LaTeX sources. The companion simulator (channel-sim/) and the gates (scripts/) are licensed AGPL-3.0-or-later; the NonCommercial and copyleft terms are deliberate, as the companion mechanization is dual-use and this work is not offered for commercial incorporation.",
+  "related_identifiers": [
+    {
+      "identifier": "10.5281/zenodo.24122159",
+      "relation": "isSupplementedBy",
+      "resource_type": "publication-preprint",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "https://github.com/jmars/physical-iso",
+      "relation": "isSupplementedBy",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}
